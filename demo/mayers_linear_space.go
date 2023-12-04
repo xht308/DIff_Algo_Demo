@@ -108,11 +108,11 @@ func findMiddleSnake(src, dest []string) (headX, headY, tailX, tailY int) {
 			// Save the x value after the operation and diagonal search
 			// The diagonal searched blocks is called a *snake* (length >= 0)
 			forward[max + k] = x
-
+			
 			// Check if any overlapping is found
 			// Since len(src) - len(dest) = gapK, the overlapping will be found when the gapK is odd
 			// gapK indicates the parity of the number of operations needed to convert the strings
-			if gapK % 2 == 1 && gapK - depth < k && k < gapK + depth {
+			if gapK % 2 != 0 && gapK - depth < k && k < gapK + depth {
 				// If the overlapping is found, return the snake
 				if forward[max + k] >= backward[max + gapK - k] {
 					return headX, headY, x, y

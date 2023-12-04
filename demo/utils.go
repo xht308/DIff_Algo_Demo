@@ -1,8 +1,11 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
+	"os"
 	"strings"
+
 	"github.com/fatih/color"
 )
 
@@ -62,6 +65,8 @@ func (s *opStack) isEmpty() bool {
 	return len(s.operations) == 0
 }
 
+// Slice & Stack Conversion
+
 func (s *opStack) Slice() []operation {
 	temp := make([]operation, len(s.operations))
 	copy(temp, s.operations)
@@ -82,7 +87,7 @@ func getStack(operations []operation) opStack {
 	return stack
 }
 
-// Operations Printing Functions
+// Printing Operations
 
 func printOperations(operations []operation) {
 	for _, op := range operations {
@@ -91,10 +96,13 @@ func printOperations(operations []operation) {
 }
 
 const (
-	pattern string = "%-2d%-2d%2s  %-34s    %-34s\n"
+	contentLength = 30
+	// The pattern for printing the operations
+	pattern string = "%-4d%-4d%2s    %-30s      %-30s\n"
 )
 
 func cutString(str string, length int) string {
+	str = strings.ReplaceAll(trimRightSpace(str), "\t", " ")
 	if len(str) > length {
 		return str[:length]
 	} else {
@@ -117,24 +125,24 @@ func printOperationsVerbose(operations []operation, src, dest []string) {
 		}
 		// Print the lines before the operation
 		for srcIndex < op.index1 {
-			temp := cutString(src[srcIndex], 34)
+			temp := cutString(src[srcIndex], contentLength)
 			fmt.Printf(pattern, srcIndex, destIndex, "", temp, temp)
 			srcIndex++
 			destIndex++
 		}
 		// Print the operation
 		if op.isInsert() {
-			fmt.Printf(pattern, srcIndex, destIndex, sign, "", cutString(dest[destIndex], 34))
+			fmt.Printf(pattern, srcIndex, destIndex, sign, "", cutString(dest[destIndex], contentLength))
 			destIndex++
 		} else {
-			fmt.Printf(pattern, srcIndex, destIndex, sign, cutString(src[srcIndex], 34), "")
+			fmt.Printf(pattern, srcIndex, destIndex, sign, cutString(src[srcIndex], contentLength), "")
 			srcIndex++
 		}
 	}
 
 	// Print the remaining lines
 	for srcIndex < len(src) {
-		temp := cutString(src[srcIndex], 34)
+		temp := cutString(src[srcIndex], contentLength)
 		fmt.Printf(pattern, srcIndex, destIndex, "", temp, temp)
 		srcIndex++
 		destIndex++
@@ -163,26 +171,45 @@ func printOperationsFancy(operations []operation, src, dest []string) {
 		}
 		// Print the lines before the operation
 		for srcIndex < op.index1 {
-			temp := cutString(src[srcIndex], 34)
+			temp := cutString(src[srcIndex], contentLength)
 			fmt.Printf(pattern, srcIndex, destIndex, "", temp, temp)
 			srcIndex++
 			destIndex++
 		}
 		// Print the operation
 		if op.isInsert() {
-			insert.Printf(pattern, srcIndex, destIndex, sign, "", cutString(dest[destIndex], 34))
+			insert.Printf(pattern, srcIndex, destIndex, sign, "", cutString(dest[destIndex], contentLength))
 			destIndex++
 		} else {
-			delete.Printf(pattern, srcIndex, destIndex, sign, cutString(src[srcIndex], 34), "")
+			delete.Printf(pattern, srcIndex, destIndex, sign, cutString(src[srcIndex], contentLength), "")
 			srcIndex++
 		}
 	}
 
 	// Print the remaining lines
 	for srcIndex < len(src) {
-		temp := cutString(src[srcIndex], 34)
+		temp := cutString(src[srcIndex], contentLength)
 		fmt.Printf(pattern, srcIndex, destIndex, "", temp, temp)
 		srcIndex++
 		destIndex++
 	}
+}
+
+// File operations
+
+func readFileLines(path string) []string {
+	file, err := os.Open(path)
+	if err != nil {
+		panic(err)
+	}
+	defer file.Close()
+
+	// Read the file line by line
+	lines := []string{}
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		lines = append(lines, scanner.Text())
+	}
+
+	return lines
 }
