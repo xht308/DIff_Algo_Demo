@@ -39,6 +39,7 @@ func getBasicDiffOperations(src, dest []string) opStack {
 
 	x := len(src)
 	y := len(dest)
+	
 	// Start from the bottom right corner of the dp array
 	// If the characters match, then append the character to the common subsequence
 	// If the characters don't match, then go in the direction of the greater subsequence
@@ -55,6 +56,17 @@ func getBasicDiffOperations(src, dest []string) opStack {
 			operations.push(operation{INSERT, x, y - 1})
 			y--
 		}
+	}
+
+	// Traverse the remaining characters
+	// All are insertions and deletions done at the beginning of the string
+	for x > 0 {
+		operations.push(operation{DELETE, x - 1, 0})
+		x--
+	}
+	for y > 0 {
+		operations.push(operation{INSERT, 0, y - 1})
+		y--
 	}
 
 	return operations
