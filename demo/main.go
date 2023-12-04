@@ -30,7 +30,7 @@ func main() {
 	flag.StringVar(&srcFile, "s", "", "The source file (string)")
 	flag.StringVar(&destFile, "d", "", "The destination file (string)")
 	flag.BoolVar(&charMode, "c", false, "Enable Character mode")
-	flag.UintVar(&verboseMode, "v", 0, "Verbose level (0, 1, 2, 3)")
+	flag.UintVar(&verboseMode, "v", 1, "Verbose level (0, 1, 2, 3)")
 	flag.StringVar(&algorithm, "a", "mayers", "The algorithm to use (basic, mayers, linearspace)")
 	flag.BoolVar(&timeEnable, "t", false, "Print the processing time")
 	flag.Parse()
