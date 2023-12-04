@@ -3,7 +3,7 @@ package main
 
 // The DP matrix in the mayer's diff algorithm is different from the one in the basic diff algorithm
 // It is a matrix using Depth (D) as the x-axis and the change of length (K) as the y-axis
-func getMayersDiffDP(src []string, dest []string) *[][]int {
+func getMayersDiffDP(src, dest []string) *[][]int {
 	m := len(src)
 	n := len(dest)
 
@@ -16,11 +16,6 @@ func getMayersDiffDP(src []string, dest []string) *[][]int {
 
 	// History: the DP matrix
 	history := [][]int{}
-
-	// Initialize the search
-	// This value will be overwrite latter and will not affect the result
-	// Only used to trigger the initial diagonal search
-	current[max + 1] = 1
 
 	// Perform the breadth-first search
 	// Discover two new branches at each step
@@ -70,7 +65,7 @@ func getMayersDiffDP(src []string, dest []string) *[][]int {
 	return &history
 }
 
-func getMayersDiffOperations(src []string, dest []string) opStack {
+func getMayersDiffOperations(src, dest []string) opStack {
 	// Get the search history
 	history := *getMayersDiffDP(src, dest)
 
@@ -134,11 +129,6 @@ func getMayersDiffCount1D(src, dest []string) int {
 
 	// No need of history since the path is not needed
 
-	// Initialize the search
-	// This value will be overwrite latter and will not affect the result
-	// Only used to trigger the initial diagonal search
-	current[max + 1] = 1
-
 	// Perform the breadth-first search
 	// Discover two new branches at each step
 	for depth := 0; depth <= max; depth++ {
@@ -167,7 +157,7 @@ func getMayersDiffCount1D(src, dest []string) int {
 			}
 
 			// Save the x value after the operation and diagonal search
-			// The combination of the operation and diagonal search is called a *snake*
+			// The diagonal searched blocks is called a *snake* (length >= 0)
 			current[max + k] = x
 
 			// If the search is done, return the depth
