@@ -8,6 +8,10 @@ func getLinearMayersDiffOperations(src, dest []string) []operation {
 	return linearMayerDiffHelper(src, dest, 0, 0)
 }
 
+func getLinearMayersDiffOperationsStack(src, dest []string) opStack {
+	return getStack(getLinearMayersDiffOperations(src, dest))
+}
+
 func linearMayerDiffHelper(src, dest []string, offsetX, offsetY int) []operation {
 	// Base case: one of the input string is empty
 	// Both are empty --> no operation needed

@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"strings"
+	"github.com/fatih/color"
 )
 
 ////////////////////////////////////////
@@ -71,4 +72,117 @@ func (s *opStack) Slice() []operation {
 	}
 
 	return temp
+}
+
+func getStack(operations []operation) opStack {
+	stack := opStack{}
+	for i := len(operations) - 1; i >= 0; i-- {
+		stack.push(operations[i])
+	}
+	return stack
+}
+
+// Operations Printing Functions
+
+func printOperations(operations []operation) {
+	for _, op := range operations {
+		fmt.Println(op)
+	}
+}
+
+const (
+	pattern string = "%-2d%-2d%2s  %-34s    %-34s\n"
+)
+
+func cutString(str string, length int) string {
+	if len(str) > length {
+		return str[:length]
+	} else {
+		return str
+	}
+}
+
+func printOperationsVerbose(operations []operation, src, dest []string) {
+	// Trace the position in the strings
+	srcIndex, destIndex := 0, 0
+	
+	// Traverse the operations
+	for _, op := range operations {
+		// Determine the sign of the operation
+		var sign string
+		if op.isInsert() {
+			sign = "+"
+		} else {
+			sign = "-"
+		}
+		// Print the lines before the operation
+		for srcIndex < op.index1 {
+			temp := cutString(src[srcIndex], 34)
+			fmt.Printf(pattern, srcIndex, destIndex, "", temp, temp)
+			srcIndex++
+			destIndex++
+		}
+		// Print the operation
+		if op.isInsert() {
+			fmt.Printf(pattern, srcIndex, destIndex, sign, "", cutString(dest[destIndex], 34))
+			destIndex++
+		} else {
+			fmt.Printf(pattern, srcIndex, destIndex, sign, cutString(src[srcIndex], 34), "")
+			srcIndex++
+		}
+	}
+
+	// Print the remaining lines
+	for srcIndex < len(src) {
+		temp := cutString(src[srcIndex], 34)
+		fmt.Printf(pattern, srcIndex, destIndex, "", temp, temp)
+		srcIndex++
+		destIndex++
+	}
+}
+
+var (
+	// The color for the insert operation
+	insert = color.New(color.FgGreen).Add(color.Bold)
+	// The color for the delete operation
+	delete = color.New(color.FgRed).Add(color.Bold)
+)
+
+func printOperationsFancy(operations []operation, src, dest []string) {
+	// Trace the position in the strings
+	srcIndex, destIndex := 0, 0
+	
+	// Traverse the operations
+	for _, op := range operations {
+		// Determine the sign of the operation
+		var sign string
+		if op.isInsert() {
+			sign = "+"
+		} else {
+			sign = "-"
+		}
+		// Print the lines before the operation
+		for srcIndex < op.index1 {
+			temp := cutString(src[srcIndex], 34)
+			fmt.Printf(pattern, srcIndex, destIndex, "", temp, temp)
+			srcIndex++
+			destIndex++
+		}
+		// Print the operation
+		if op.isInsert() {
+			insert.Printf(pattern, srcIndex, destIndex, sign, "", cutString(dest[destIndex], 34))
+			destIndex++
+		} else {
+			delete.Printf(pattern, srcIndex, destIndex, sign, cutString(src[srcIndex], 34), "")
+			srcIndex++
+		}
+	}
+
+	// Print the remaining lines
+	for srcIndex < len(src) {
+		temp := cutString(src[srcIndex], 34)
+		fmt.Printf(pattern, srcIndex, destIndex, "", temp, temp)
+		srcIndex++
+		destIndex++
+	}
 }

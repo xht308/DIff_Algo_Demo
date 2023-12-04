@@ -1,9 +1,5 @@
 package main
 
-import (
-	"fmt"
-)
-
 func main() {
 	src := []string{"c", "a", "b"}
 	dest := []string{"a"}
@@ -13,5 +9,5 @@ func main() {
 	// }
 	// headX, headY, tailX, tailY := findMiddleSnake(src, dest, 0, 0)
 	// temp := getMayersDiffOperations(src, dest)
-	fmt.Println(getLinearMayersDiffOperations(src, dest))
+	printOperationsFancy(getLinearMayersDiffOperations(src, dest), src, dest)
 }
