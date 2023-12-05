@@ -1,15 +1,15 @@
 package main
 
-// The refined version of the basic mayers diff algorithm is based on the concept of divide and conquer
+// The refined version of the basic myers diff algorithm is based on the concept of divide and conquer
 // It operates in a way much similar to the quick sort algorithm by determining the middle point in each iteration
 // Therefore, there is no DP matrix generated in this process
 
-func getLinearMayersDiffOperations(src, dest []string) []operation {
+func getLinearMyersDiffOperations(src, dest []string) []operation {
 	return linearMayerDiffHelper(src, dest, 0, 0)
 }
 
-func getLinearMayersDiffOperationsStack(src, dest []string) opStack {
-	return getStack(getLinearMayersDiffOperations(src, dest))
+func getLinearMyersDiffOperationsStack(src, dest []string) opStack {
+	return getStack(getLinearMyersDiffOperations(src, dest))
 }
 
 func linearMayerDiffHelper(src, dest []string, offsetX, offsetY int) []operation {
@@ -45,7 +45,7 @@ func linearMayerDiffHelper(src, dest []string, offsetX, offsetY int) []operation
 // Snake is the diagonal path following the INSERT or DELETE operations
 // The length of snakes >= 0
 func findMiddleSnake(src, dest []string) (headX, headY, tailX, tailY int) {
-	// Use the same strategy as the basic mayers diff algorithm to find the middle snake
+	// Use the same strategy as the basic myers diff algorithm to find the middle snake
 	// But search simultaneously from both ends of the strings
 	m := len(src)
 	n := len(dest)
@@ -57,7 +57,7 @@ func findMiddleSnake(src, dest []string) (headX, headY, tailX, tailY int) {
 	gapK := m - n
 
 	// Inseated of using a DP matrix, use two slices to store the x values
-	// Like what we have done in the getMayersDiffCount1D function
+	// Like what we have done in the getMyersDiffCount1D function
 	forward := make([]int, 2*max+1)
 	backward := make([]int, 2*max+1)
 

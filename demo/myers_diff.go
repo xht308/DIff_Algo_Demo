@@ -1,8 +1,8 @@
 package main
 
-// The DP matrix in the mayers diff algorithm is different from the one in the basic diff algorithm
+// The DP matrix in the myers diff algorithm is different from the one in the basic diff algorithm
 // It is a matrix using Depth (D) as the x-axis and the change of length (K) as the y-axis
-func getMayersDiffDP(src, dest []string) *[][]int {
+func getMyersDiffDP(src, dest []string) *[][]int {
 	m := len(src)
 	n := len(dest)
 
@@ -64,9 +64,9 @@ func getMayersDiffDP(src, dest []string) *[][]int {
 	return &history
 }
 
-func getMayersDiffOperations(src, dest []string) opStack {
+func getMyersDiffOperations(src, dest []string) opStack {
 	// Get the search history
-	history := *getMayersDiffDP(src, dest)
+	history := *getMyersDiffDP(src, dest)
 
 	// Find the final K value
 	// what is the K value of the lower-right corner of the edit graph
@@ -108,14 +108,14 @@ func getMayersDiffOperations(src, dest []string) opStack {
 /** The following is not used in getting diff */
 // Just serve as a reference for the ways to reduce space complexity
 
-func getMayersDiffCount(src, dest []string) int {
+func getMyersDiffCount(src, dest []string) int {
 	// Get the dp array
-	dp := *getMayersDiffDP(src, dest)
+	dp := *getMyersDiffDP(src, dest)
 
 	return len(dp) - 1
 }
 
-func getMayersDiffCount1D(src, dest []string) int {
+func getMyersDiffCount1D(src, dest []string) int {
 	m := len(src)
 	n := len(dest)
 

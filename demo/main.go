@@ -31,7 +31,7 @@ func main() {
 	flag.StringVar(&destFile, "d", "", "The destination file (string)")
 	flag.BoolVar(&charMode, "c", false, "Enable Character mode")
 	flag.UintVar(&verboseMode, "v", 1, "Verbose level (0, 1, 2, 3)")
-	flag.StringVar(&algorithm, "a", "mayers", "The algorithm to use (basic, mayers, linearspace)")
+	flag.StringVar(&algorithm, "a", "myers", "The algorithm to use (basic, myers, linearspace)")
 	flag.BoolVar(&timeEnable, "t", false, "Print the processing time")
 	flag.Parse()
 
@@ -62,12 +62,12 @@ func main() {
 		temp := getBasicDiffOperations(src, dest)
 		endTime = time.Now()
 		operations = temp.Slice()
-	case "mayers":
-		temp := getMayersDiffOperations(src, dest)
+	case "myers":
+		temp := getMyersDiffOperations(src, dest)
 		endTime = time.Now()
 		operations = temp.Slice()
 	case "linearspace":
-		operations = getLinearMayersDiffOperations(src, dest)
+		operations = getLinearMyersDiffOperations(src, dest)
 		endTime = time.Now()
 	default:
 		panic("Invalid algorithm")

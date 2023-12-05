@@ -22,23 +22,23 @@ Space Complexity: `O(mn)`
 
 Inspired by the dynamic programming solution of the Longest Common Subsequence (LCS) problem, the basic diff algorithm is simply a modification of the LCS algorithm counting the minimum number of mismatches instead of matches and tracing the shortest edit script along the same path as the longest subsequence.
 
-### Mayers Diff Algorithm
-Implementation: `mayers_diff.go`
+### Myers Diff Algorithm
+Implementation: `myers_diff.go`
 
 Time Complexity: `O(M+N+D^2)` expected / `O((M+N)D)` worest
 
 Space Complexity: `O(D^2)`
 
-Firstly proposed by Eugene W. Myers in 1986 in the paper titled [AnO(ND) difference algorithm and its variations](https://doi.org/10.1007/BF01840446), the Mayers Diff Algorithm searches the shortest edit script in a way similar to breadth-first search and might be the most widely-used diff algorithm today. It offers better performance in common use cases (Version Control, Genetic Sequence Differentiation, etc.)
+Firstly proposed by Eugene W. Myers in 1986 in the paper titled [AnO(ND) difference algorithm and its variations](https://doi.org/10.1007/BF01840446), the Myers Diff Algorithm searches the shortest edit script in a way similar to breadth-first search and might be the most widely-used diff algorithm today. It offers better performance in common use cases (Version Control, Genetic Sequence Differentiation, etc.)
 
-### Mayers Diff Algorithm in Linear Space
-Implementation: `mayers_linear_space.go`
+### Myers Diff Algorithm in Linear Space
+Implementation: `myers_linear_space.go`
 
 Time Complexity: `O((M+N)D)`
 
 Space Complexity: `O(M+N)`
 
-As the `O(D^2)` space complexity of the basic mayers diff algorithm is not practical for the use cases involving the processing of large files, Eugene W. Myers proposed the space-optimized version of the algorithm in the same [paper](https://doi.org/10.1007/BF01840446) utilizing the divide-and-conquer and recursive method to elimiate the need to keep historical records and make the space complexity linear. Similar to quick sort, the algorithm tends to find the matching sequence (middle snake) at the middle of edit script and divide the problem into two smaller ones in each iteration.
+As the `O(D^2)` space complexity of the basic myers diff algorithm is not practical for the use cases involving the processing of large files, Eugene W. Myers proposed the space-optimized version of the algorithm in the same [paper](https://doi.org/10.1007/BF01840446) utilizing the divide-and-conquer and recursive method to elimiate the need to keep historical records and make the space complexity linear. Similar to quick sort, the algorithm tends to find the matching sequence (middle snake) at the middle of edit script and divide the problem into two smaller ones in each iteration.
 
 ## Usage
 *Only **windows** executable is provided in the [releases](https://github.com/xht308/Diff_Algo_Demo/releases/latest). You may need to build your own binary if using other platforms.*
@@ -78,11 +78,11 @@ $ ./godiff -c -s src_string -d dest_string
 ### Commandline Parameters
 
 #### -a: Algorithm
-Chose which algorithm (`basic`, `mayers`, `linearspace`) to use.
+Chose which algorithm (`basic`, `myers`, `linearspace`) to use.
 ```bash
 -a basic        # Basic Diff Algorithm
--a mayers       # Mayers Diff Algorithm (default)
--a linearspace  # Mayers Diff Algorithm in Linear Space
+-a myers       # Myers Diff Algorithm (default)
+-a linearspace  # Myers Diff Algorithm in Linear Space
 ```
 
 #### -c: Enable Character Mode
