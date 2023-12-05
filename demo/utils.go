@@ -126,16 +126,16 @@ func printOperationsVerbose(operations []operation, src, dest []string) {
 		// Print the lines before the operation
 		for srcIndex < op.index1 {
 			temp := cutString(src[srcIndex], contentLength)
-			fmt.Printf(pattern, srcIndex, destIndex, "", temp, temp)
+			fmt.Printf(pattern, srcIndex+1, destIndex+1, "", temp, temp)
 			srcIndex++
 			destIndex++
 		}
 		// Print the operation
 		if op.isInsert() {
-			fmt.Printf(pattern, srcIndex, destIndex, sign, "", cutString(dest[destIndex], contentLength))
+			fmt.Printf(pattern, srcIndex+1, destIndex+1, sign, "", cutString(dest[destIndex], contentLength))
 			destIndex++
 		} else {
-			fmt.Printf(pattern, srcIndex, destIndex, sign, cutString(src[srcIndex], contentLength), "")
+			fmt.Printf(pattern, srcIndex+1, destIndex+1, sign, cutString(src[srcIndex], contentLength), "")
 			srcIndex++
 		}
 	}
@@ -143,7 +143,7 @@ func printOperationsVerbose(operations []operation, src, dest []string) {
 	// Print the remaining lines
 	for srcIndex < len(src) {
 		temp := cutString(src[srcIndex], contentLength)
-		fmt.Printf(pattern, srcIndex, destIndex, "", temp, temp)
+		fmt.Printf(pattern, srcIndex+1, destIndex+1, "", temp, temp)
 		srcIndex++
 		destIndex++
 	}
@@ -172,16 +172,16 @@ func printOperationsFancy(operations []operation, src, dest []string) {
 		// Print the lines before the operation
 		for srcIndex < op.index1 {
 			temp := cutString(src[srcIndex], contentLength)
-			fmt.Printf(pattern, srcIndex, destIndex, "", temp, temp)
+			fmt.Printf(pattern, srcIndex+1, destIndex+1, "", temp, temp)
 			srcIndex++
 			destIndex++
 		}
 		// Print the operation
 		if op.isInsert() {
-			insert.Printf(pattern, srcIndex, destIndex, sign, "", cutString(dest[destIndex], contentLength))
+			insert.Printf(pattern, srcIndex+1, destIndex+1, sign, "", cutString(dest[destIndex], contentLength))
 			destIndex++
 		} else {
-			delete.Printf(pattern, srcIndex, destIndex, sign, cutString(src[srcIndex], contentLength), "")
+			delete.Printf(pattern, srcIndex+1, destIndex+1, sign, cutString(src[srcIndex], contentLength), "")
 			srcIndex++
 		}
 	}
@@ -189,7 +189,7 @@ func printOperationsFancy(operations []operation, src, dest []string) {
 	// Print the remaining lines
 	for srcIndex < len(src) {
 		temp := cutString(src[srcIndex], contentLength)
-		fmt.Printf(pattern, srcIndex, destIndex, "", temp, temp)
+		fmt.Printf(pattern, srcIndex+1, destIndex+1, "", temp, temp)
 		srcIndex++
 		destIndex++
 	}

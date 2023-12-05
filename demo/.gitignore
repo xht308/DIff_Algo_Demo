@@ -21,3 +21,6 @@ vendor/
 # Output files (remove the comment below to include it)
 # *
 # !.gitignore
+
+# Temporary files (remove the comment below to include it)
+temp*.txt

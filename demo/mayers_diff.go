@@ -1,6 +1,6 @@
 package main
 
-// The DP matrix in the mayer's diff algorithm is different from the one in the basic diff algorithm
+// The DP matrix in the mayers diff algorithm is different from the one in the basic diff algorithm
 // It is a matrix using Depth (D) as the x-axis and the change of length (K) as the y-axis
 func getMayersDiffDP(src, dest []string) *[][]int {
 	m := len(src)

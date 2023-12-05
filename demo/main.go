@@ -18,7 +18,7 @@ var (
 	// Algorithm
 	algorithm      string
 	// Processing timeEnable
-	timeEnable           bool
+	timeEnable     bool
 )
 
 /////////////////////////////
