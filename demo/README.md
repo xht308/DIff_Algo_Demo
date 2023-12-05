@@ -50,6 +50,74 @@ Go >= 1.21.0
 ```
 
 First, clone the git repository to the local machine
+```bash
+$ git clone https://github.com/xht308/Diff_Algo_Demo.git
 ```
-$ git clone 
+
+Second, change directory to the Go project
+```bash
+$ cd Diff_Algo_Demo/demo
+```
+
+Finally, build the project with Go
+```bash
+$ go build
+```
+
+### Basic Usage
+To compare two files:
+```bash
+$ ./godiff -s path_to_src_file -d path_to_dest_file
+```
+
+To compare two strings:
+```bash
+$ ./godiff -c -s src_string -d dest_string
+```
+
+### Commandline Parameters
+
+#### -a: Algorithm
+Chose which algorithm (`basic`, `mayers`, `linearspace`) to use.
+```bash
+-a basic        # Basic Diff Algorithm
+-a mayers       # Mayers Diff Algorithm (default)
+-a linearspace  # Mayers Diff Algorithm in Linear Space
+```
+
+#### -c: Enable Character Mode
+Adding this flag will make the program finding shortest edit sequence between src and dest `strings`.
+
+#### -d: The destination file (string)
+**Necessary**. The path to the destination file or the destination string if the character mode enabled.
+
+#### -s: The source file (string)
+**Necessary**. The path to the source file or the source string if the character mode enabled.
+
+#### -t: Print the processing time
+With this flag enabled, the program will append the running time of the algorithm to the output in a new line.
+
+#### -v: Verbose Level
+By give different values (0, 1, 2, 3), the program will give different levels of details in the output.
+```bash
+-v 0    # Disable Output
+-v 1    # Basic Output      (default) (e.g. DELETE 2 2)
+-v 2    # Verbose Output    (with the content of files)
+-v 3    # Fancy Output      (with content and color)
+```
+
+### Recommended Usage
+Compare two files
+```bash
+$ ./godiff -s path_to_src_file -d path_to_dest_file -v 3
+```
+
+Test Algorithms
+```bash
+$ ./godiff -s path_to_src_file -d path_to_dest_file -v 0 -t -a algorithm_to_test
+```
+
+Pipe output to file
+```bash
+$ ./godiff -s path_to_src_file -d path_to_dest_file -v 2 > output_file
 ```
