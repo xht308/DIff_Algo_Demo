@@ -41,7 +41,7 @@ Space Complexity: `O(M+N)`
 As the `O(D^2)` space complexity of the basic mayers diff algorithm is not practical for the use cases involving the processing of large files, Eugene W. Myers proposed the space-optimized version of the algorithm in the same [paper](https://doi.org/10.1007/BF01840446) utilizing the divide-and-conquer and recursive method to elimiate the need to keep historical records and make the space complexity linear. Similar to quick sort, the algorithm tends to find the matching sequence (middle snake) at the middle of edit sequence and divide the problem into two smaller ones in each iteration.
 
 ## Usage
-*Only **windows** executable is provided in the releases. You may need to build your own binary if using other platforms.*
+*Only **windows** executable is provided in the [releases](https://github.com/xht308/Diff_Algo_Demo/releases/latest). You may need to build your own binary if using other platforms.*
 
 ### Build Binary
 Prerequisites
