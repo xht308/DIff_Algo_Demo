@@ -1,0 +1,441 @@
+\documentclass[sigplan,screen]{acmart}
+
+% Packages for pseudocode blocks
+\usepackage[ruled, linesnumbered]{algorithm2e}
+
+%% Remove ACM template copyright
+\settopmatter{printacmref=false}
+\setcopyright{none}
+\renewcommand\footnotetextcopyrightpermission[1]{}
+\pagestyle{plain}
+
+%% These commands are for a PROCEEDINGS abstract or paper.
+\acmConference[CPS 3410 Individual Project]{}{Nov 28, 2023}{Fall}
+
+\begin{document}
+
+%%
+%% The "title" command has an optional parameter,
+%% allowing the author to define a "short title" to be used in page headers.
+\title{Review of the Shortest Edit Script Problem And Difference Algorithms}
+
+%%
+%% The "author" command and its associated commands are used to define
+%% the authors and their affiliations.
+%% Of note is the shared affiliation of the first two authors, and the
+%% "authornote" and "authornotemark" commands
+%% used to denote shared contribution to the research.
+\author{Haotian Xue}
+\email{xueha@kean.edu}
+\affiliation{%
+  \institution{Wenzhou-Kean University}
+  \streetaddress{88 Daxue Rd, Ouhai}
+  \city{Wenzhou}
+  \state{Zhejiang}
+  \country{China}
+  \postcode{325060}
+}
+
+%%
+%% The abstract is a short summary of the work to be presented in the
+%% article.
+\begin{abstract}
+  Aiming to examine the detailed algorithm implementation behind the popular software utilities, such as Git and Diff, the study investigated the Shortest Edit Script (SES) problem as the underlying challenge, examined the different algorithms as solutions to the problem, and compared their performance under different scenarios. The study also provides insight into the Longest Common Subsequence (LCS) problem for a better understanding of the SES problem. 
+  % From the basic algorithms to the optimized versions with complex logic, the study offers a progressive view of the development of algorithms. 
+  For the performance test, the source files in the Linux kernel were selected to simulate the real-world use cases of the relevant development tools. In conclusion, the study found a significant performance gap between the different algorithms and implementations in different conditions.
+\end{abstract}
+
+%%
+%% Keywords. The author(s) should pick words that accurately describe
+%% the work being presented. Separate the keywords with commas.
+\keywords{Algorithm, Difference, Longest Common Subsequence, Shortest Edit Script, Dynamic Programming}
+
+%%
+%% This command processes the author and affiliation and title
+%% information and builds the first part of the formatted document.
+\maketitle
+
+%%%%%%%%%%%%%%%%%%%%%
+%%  Introduction   %%
+%%%%%%%%%%%%%%%%%%%%%
+
+\section{Introduction}
+\label{section:intro}
+% Para1: Background
+With the rapid development of software engineering and the explosion of data in recent years, the operation of getting differences between different data sources is becoming increasingly significant in today's context as they can be used to extract information on changes from the comparisons. By analyzing the changes, people can easily trace the history of modification, shift in the public interest, compare the similarities, and detect the potential key variables in a multi-factor environment, which contributes to its significance in applications like software source code management, genetic engineering, and big data analysis, where the changes are important. \cite{lijuAlgorithmDeriveShortest2022, myersAnONDDifference1986, goslingRedisplayAlgorithm1981, harelFastAlgorithmsFinding1984, rochkindSourceCodeControl1975a} The nature of getting data differences makes the difference algorithms the solutions to the Shortest Edit Script (SES) problem \cite{lijuAlgorithmDeriveShortest2022, myersAnONDDifference1986, masekFasterAlgorithmComputing1980}, which aims to find the shortest sequence of edition operations needed to convert one file to another, as the editions needed are simply the differences and the target to find the shortest script helps the differences to focus only on the key changing part of the data.
+
+% Para2: SES problem and Diff Algorithm Overview
+In the past few decades, extensive research has been done on the SES problem making it efficient and practical for its various use cases. \cite{myersAnONDDifference1986, lijuAlgorithmDeriveShortest2022, harelFastAlgorithmsFinding1984, goslingRedisplayAlgorithm1981} With the application of new optimization techniques, the diff algorithms tend to have lower time complexity and space complexity, and some of them are still used today and integrated into some commonly used tools. For example, proposed by Myers in 1986 \cite{myersAnONDDifference1986}, the Myers Diff Algorithm and its refinement are still used as the default diff algorithm of Git and the Unix Diff Utility thanks to its outstanding performance in comparing code snippets. In addition, the Basic Diff Algorithm \cite{wagnerStringtoStringCorrectionProblem1974} also got extensive use in small programs and scripts for processing small amounts of data due to its simplicity.
+
+% Para3: Study necessity
+Although the diff algorithms have been well-developed today and derived various variations for all kinds of use cases \cite{khannaFormalInvestigationDiff32007}, it is still essential to look into the design logic and implementation details of the algorithms to understand the unique features of each for selection and help explain the behavior of some commonly used software utilities to make the output predictable and help maximize productivity with the assistance of the software tools, which is important in the modern software development practices as the version control systems based on the algorithms \cite{rochkindSourceCodeControl1975a} have become a necessity in software projects on a large scale. Furthermore, the SES problem and diff algorithms are also crucial components of some more complicated programming problems, making the understanding of diff algorithms extensible and reusable in understanding and solving other programming challenges.
+
+% Para 4: Paper Structure Summary
+Starting with the Longest Common Subsequence (LCS) problem, which is computationally equivalent to the SES problem \cite{bergrothSurveyLongestCommon2000, lijuAlgorithmDeriveShortest2022, masekFasterAlgorithmComputing1980, myersAnONDDifference1986, patersonLongestCommonSubsequences1994} as the sequence excluded by the longest common subsequence is simply part of the document needing to be inserted or deleted defined by the shortest edit script (SES), and its solutions, this study then expand this method to solving the SES problem forming the basic diff algorithm \cite{wagnerStringtoStringCorrectionProblem1974} and finally introduces the further optimized Myers Diff Algorithm\cite{myersAnONDDifference1986} and its variant with linear space complexity \cite{myersAnONDDifference1986} as the most commonly used algorithm solution for this problem. A performance test on different situations was also conducted among the three Diff algorithms (basic, Myers, and linear-space Myers Algorithms) to investigate the performance influence of the different logic and concepts the algorithms are based on and their suitable use cases.
+
+%%%%%%%%%%%%%%%%%%%%%
+%%       LCS       %%
+%%%%%%%%%%%%%%%%%%%%%
+
+\section{The Longest Common Subsequence (LCS) Problem}
+\label{section:lcs}
+
+% General Explanation
+Before discussing the Shortest Edit Script (SES) problem, it is worthwhile to mention the longest common subsequence (LCS) problem first as a simpler equivalence of it. Thanks to the similarity of the two problems, the solutions for the LCS problems can then be modified to be a valid solution for the SES problem as is shown in Section~\ref{section:ses}. It is also necessary to mention the LCS problem not only because it is another classic algorithmic problem that has a direct relationship with the diff algorithm but also due to its inspiration for further optimization of the diff algorithm.
+
+\subsection{LCS Problem Definition}
+\label{section:lcs-def}
+
+As a common algorithmic problem \cite{crochemoreLongestCommonSubstring2017}, the Longest Common Subsequence (LCS) problem is finding the longest subsequence shared in the two input sequences where the subsequence does not need to be continuous in either input sequence distinguishing it from the Longest Common Substring problem \cite{crochemoreLongestCommonSubstring2017}. The LCS of two input sequences follows the following rules:
+
+\begin{itemize}
+\item For two same input sequences, the LCS should be the same, containing all elements in the input sequence.
+\item For two different input sequences sharing the same elements, there exists LCS with its length greater or equal to one.
+\item For two completely different input sequences sharing no elements, LCS does not exist.
+\end{itemize}
+
+Notably, for the second scenario above, the most common one, there may exist more than one valid LCSes, which have the same length but different elements or order. Therefore, it is normal for different algorithms and implementations to have different solutions to the same LCS problem. \cite{bergrothSurveyLongestCommon2000, hirschbergAlgorithmsLongestCommon1977, hirschbergLinearSpaceAlgorithm1975, lijuAlgorithmDeriveShortest2022, masekFasterAlgorithmComputing1980, myersAnONDDifference1986, patersonLongestCommonSubsequences1994}
+
+For convenience, define the length of the first input sequence (origin) as $M$ and the length of the second input sequence (target) as $N$, which will be used in the rest of the paper for complexity calculation.
+
+%%  LCS Brute Force  %%
+
+\subsection{LCS Brute Force Solution}
+\label{section:lcs-brute-force}
+
+% Algorithm Logic
+Since the longest common subsequence must first be a common subsequence of both input sequences, which is also one of the possible subsequences of one specific input sequence, consisting of a series of elements following the order of the original sequence, it is straightforward to try out every possible subsequence according to one of the inputs and choose the valid one with longest length as the result following the brute force method to solve the LCS problem. \cite{bergrothSurveyLongestCommon2000, hirschbergLinearSpaceAlgorithm1975, patersonLongestCommonSubsequences1994} \textit{Algorithm \ref{algo:lcs-brute-force}} lists the essential steps of the brute force algorithm for the LCS problem.
+
+% LCS Brute Force Algorithm Pseudocode
+\begin{algorithm}
+    \caption{LCS Brute Force Solution}
+    \label{algo:lcs-brute-force}
+    \SetKwFunction{LCS}{LCS}
+    \SetKwFunction{len}{len}
+    \KwData{$X, Y \in sequence \wedge \len{X} \le \len{Y}$}
+    \KwResult{$lcs =$ the LCS of X and Y}
+    $i \gets 2 ^ {\len{X}} - 1$ \;
+    $lcs \gets$ empty sequence \;
+    \While{$i > 0$}{
+        $sub \gets binaryMask(X, i)$ \;
+        \If{$sub$ is a subsequence of $Y$ \textbf{AND} $ \len{sub} > \len{lcs}$}{
+            $lcs \gets sub$ \;
+        }
+    }
+\end{algorithm}
+
+% Time Complexity
+Although the brute force solution is simple in logic, it has an unacceptably large time complexity of $$O(2^{min(M, N)} \cdot max(M, N))$$ made up of the $O(2^{min(M, N)})$ need to traverse all possible subsequences and the $O(max(M, N))$ operations to check the validity of each proposed subsequence by traversing the other string.
+
+% Drawbacks of brute force algorithm
+One primary factor that caused the expansion of algorithm time complexity is the traversal of all possible subsequences as candidates of the LCS, though in \textit{Algorithm \ref{algo:lcs-brute-force}} the shorter sequence in the inputs is used to generate the possible subsequences to reduce the number of iterations. In addition, the traversal operations are also a waste of computational power since the LCS must consist of several shorter common subsequences, which are traversed multiple times in search of the longest while their results are largely discarded in the brute force solution. Based on these drawbacks, the brute force algorithm for the LCS problem is not commonly used in practical use cases. \cite{bergrothSurveyLongestCommon2000, patersonLongestCommonSubsequences1994}
+
+%%   LCS Recursive   %%
+
+\subsection{LCS Recursive Solution}
+\label{section:lcs-recursive}
+
+% What's changed
+To reduce the time complexity and make the algorithm applicable for practical use cases, the recursive solution of the Longest Common Subsequence (LCS) problem further reduces the number of iterations needed by utilizing the relationship between the LCS and its subsequences, which are shorter common subsequences between the two inputs. \cite{bergrothSurveyLongestCommon2000, hirschbergAlgorithmsLongestCommon1977, patersonLongestCommonSubsequences1994}
+
+% How the recursion works
+Because each element in the LCS is a common element between the two input sequences, when finding the first element of both inputs the same element, it can be directly appended to the LCS sequence, which represents the longest common sequence so far reading both inputs. \cite{bergrothSurveyLongestCommon2000} Otherwise, it indicates at least one of the two heading elements must not included in the LCS. In this situation, by discarding the first element of one sequence and continuing the evaluation respectively for each input sequence until one of them becomes empty, the LCS can be obtained by selecting the longer subsequence at each time of splitting the situations. \cite{bergrothSurveyLongestCommon2000}
+
+This relationship reveals the recursive nature of the solution of the LCS problem that, knowing the LCS of the first $i$ elements and $j$ elements of the two input sequences, the complete LCS is simply the concatenation of the knowing LCS and the LCS of the leftover part of the sequences. To get the LCS of two strings, it can be seen as finding the first element in the LCS and then appending the LCS of the leftover part to it. The method to find the first element is described above, forming a tree-like recursive structure for the finding of the complete LCS. Staring the divide-and-conquer process from the first element of the two input sequences and stopping when one of them has no more element for evaluation ensures the validity of the obtained LCS, with each iteration either determining one element in the LCS or branching the evaluation into two separate situations.
+
+The mathematical representation of the logic is shown in \textit{Equation \ref{eq:lcs-recursive}} where $f(i, j)$ represents the LCS from the $i^{th}$ elements of the first input sequence (origin) and the $j^{th}$ element of the second input sequence (target) til the end of each sequence.
+
+% The two-column layout cannot contain such a complex equation
+% No enough space
+\begin{equation}
+    \label{eq:lcs-recursive}
+    f(i, j) = \left \{
+    \begin{aligned}
+        empty\ sequence &, & i > M \vee j > N \\
+        X[i] + f(i+1, j+1) &, & X[i] = Y[i] \\
+        longer(f(i+1, j), f(i, j+1)) &, & X[i] \neq Y[i]
+    \end{aligned}
+    \right.
+\end{equation}
+
+% Programming logic
+Based on this recurrence relation, the recursive solution of the LCS problem is designed and implemented by checking a pair of elements in each iteration and entering the next iteration with either a new element appended to the current LCS or two separate situations to evaluate. Encountering its base case when there are no more element pairs to check, the algorithm will finally stop recurring after traversing one of the input sequences to the end in all situations. The essential steps of the algorithm are listed in \textit{Algorithm \ref{algo:lcs-recursive}}.
+
+\begin{algorithm}
+    \caption{LCS Recursive Solution}
+    \label{algo:lcs-recursive}
+    \SetKwFunction{LCS}{LCS}
+    \SetKwFunction{len}{len}
+    \KwData{$X, Y \in sequence$}
+    \KwResult{$lcs =$ the LCS of X and Y}
+    \SetKwProg{Fn}{Function}{:}{end}
+    \Fn{\LCS{$i$, $j$}}{
+        \uIf{$i > \len{X} $ \textbf{OR} $ j > \len{Y}$}{
+            \KwRet empty sequence \;
+        }
+        \uElseIf{$X[i] = Y[j]$}{
+            \KwRet $X[i]$ append \LCS{i+1, j+1} \;
+        }
+        \Else{
+            \eIf{$\len{\LCS{i+1, j}} > \len{\LCS{i, j+1}}$}{
+                \KwRet \LCS{i+1, j} \;
+            }{
+                \KwRet \LCS{i, j+1} \;
+            }
+        }
+    }
+\end{algorithm}
+
+% The benefits of recursion
+By reusing the intermediate result of partial LCSes, the application of the recursive method in solving the LCS problem can significantly reduce the computation cost by dividing the big problem of finding LCS in the range of two complete sequences to many small problems of finding the next element of the LCS, which only includes a simple comparison and sequence concatenation. The recursive structure naturally supports the branching operations needed in the algorithm, making its code presentation simple and concise.
+
+% Complexity analysis
+The recursive solution works well in the common use cases where there are only a small number of differences in the two input sequences. In such cases, the same element can be directly appended to the LCS, and a few branches are made since they are only needed when a difference is detected. \cite{bergrothSurveyLongestCommon2000} However, when the two input sequences are largely or entirely different, the recursive algorithm can hardly provide any improvement or even results in a worse time complexity of $O(2^{max(M, N)})$ compared to the Brute Force solution. \cite{bergrothSurveyLongestCommon2000, hirschbergAlgorithmsLongestCommon1977} Though reducing the overhead of checking the candidate subsequence in each iteration, the recursive algorithm may produce an even larger number of branches in the worst case, with many of them overlapping each other and repeatedly computing the same thing, causing a waste of computational power and memory space. The maximum number of branches satisfies the complexity of $O(2^{max(M, N)})$ in the worst case according to the $max(M, N)$ layer binary-tree-like structure made by recursion.
+
+%%   LCS Dynamic Programming   %%
+
+\subsection{LCS Dynamic Programming Solution}
+\label{section:lcs-dynamic-programming}
+
+% What's changed
+Having the most significant problem of the recursive solution repeated computation, it is natural to apply the dynamic programming techniques to the algorithm as it allows the reuse of the computational result of every single step making no waste of computational power on overlapping branches. \cite{bellmanDynamicProgramming1966, eddyWhatDynamicProgramming2004, howardDynamicProgramming1966, patersonLongestCommonSubsequences1994} The existence of the explicit recurrence relation in finding the LCS makes the dynamic programming solution practical and clear by constructing a reversed search tree in a 2D space. \cite{bergrothSurveyLongestCommon2000, patersonLongestCommonSubsequences1994}
+
+% How dynamic programming works
+As is described in \textit{Section \ref{section:lcs-recursive}}, the LCS can be obtained by constantly finding the first element of the LCS of the current segments and appending the LCS of the leftover part of it until there is no more elements or branches to examine. A similar logic is followed in the dynamic programming solution by first exploring all possible branches and constantly selecting the situations with longer LCSes by merging them during the traversal of input sequences. When the traversal reaches the end of both input sequences, there will be only one branch left, which, after all the comparisons, presents the final LCS of the problem. \cite{bergrothSurveyLongestCommon2000, hirschbergLinearSpaceAlgorithm1975, patersonLongestCommonSubsequences1994}
+
+Though similar in the recurrence relation used and representation of data, the dynamic programming solution of the LCS problem has a different algorithm design and implementation compared to the recursive solution to adapt to the dynamic programming method. Defining $LCS(i, j)$ as the \textbf{length} of the LCS of the first $i$ elements of the first input sequence (origin) and the first $j$ elements of the second input sequence (target), the calculation of $LCS(i, j)$ follows \textit{Equation \ref{eq:lcs-dynamic-programming-gen}} according to the recurrence relation mentioned above where $f(i, j)$ is the same as $LCS(i, j)$. \cite{jiangApproximationShortestCommon1995}
+
+\begin{equation}
+    \label{eq:lcs-dynamic-programming-gen}
+    f(i, j) = \left \{
+    \begin{aligned}
+        0 &, & i = 0 \vee j = 0 \\
+        f(i-1, j-1) + 1 &, & X[i] = Y[j] \\
+        max(f(i-1, j), f(i, j-1)) &, & X[i] \neq Y[j]
+    \end{aligned}
+    \right.
+\end{equation}
+
+% Programming logic of dynamic programming array generation
+When one of the sequence segments is empty, the LCS of them is also empty ($i = 0 \vee j = 0$). When the next elements of the two sequences are the same ($X[i] = Y[j]$), add the element to the LCS, and the length of the LCS increases. When the next elements of the two sequences are not the same ($X[i] \neq Y[j]$), select the longer length of the nearest two branches as the length of the current LCS, as no element is added to the LCS. \cite{hirschbergLinearSpaceAlgorithm1975} According to this relationship, a \textit{2D} integer array of size $(M+1)\times(N+1)$ can be created with each location indicating the intermediate result for a specific pair of $i$ and $j$. By traversing each location in ascending order covering all pairs of $i$ and $j$, the arrays can be filled, and the final LCS can be read from $dp[i][j]$ as it is the optimized result after merging all branches and entirely cover the two input sequences. Describing the processing in programming logic, the essential step of the dynamic programming solution of the LCS problem is listed in \textit{Algorithm \ref{algo:lcs-dynamic-programming-gen}}.
+
+\begin{algorithm}
+    \caption{LCS Dynamic Programming Generation}
+    \label{algo:lcs-dynamic-programming-gen}
+    \SetKwFunction{DP}{DP}
+    \SetKwFunction{max}{max}
+    \KwData{$X, Y \in sequence$}
+    \KwResult{$length =$ the length of the LCS of X and Y}
+    \SetKwProg{Fn}{Function}{:}{end}
+    \Fn{\DP{$X$, $Y$}}{
+        $dp \gets int[M+1][N+1]$ \;
+        \textit{Fill the row $i=0$ and column $j=0$ with $0$} \;
+        \For{$i \gets 1$ \KwTo $M$}{
+            \For{$j \gets 1$ \KwTo $N$}{
+                \eIf{$X[i-1] = Y[j-1]$}{
+                    $dp[i][j] = dp[i-1][j-1] + 1$ \;
+                }{
+                    $dp[i][j] = \max{dp[i-1][j], dp[i][j-1]}$ \;
+                }
+            }
+        }
+        \KwRet $dp[M][N]$ \;
+    }
+\end{algorithm}
+
+% Time complexity of generating dynamic programming array
+By performing a const time operation of each location of the dynamic programming array, the dynamic programming solution of the LCS problem generates the intermediate results and gets the length of the LCS in a $O(MN)$ time and space complexity since the dynamic programming has $(M+1)\times(N+1)$ locations in total. \cite{bergrothSurveyLongestCommon2000, hirschbergAlgorithmsLongestCommon1977, hirschbergLinearSpaceAlgorithm1975, patersonLongestCommonSubsequences1994} Occupying some extra memory space, the dynamic programming techniques greatly improved the performance of the algorithm compared to the brute force and recursive solutions. However, only the length of the LCS can be obtained using dynamic programming, which requires additional steps to regenerate the path of increment, the LCS, in other words. \cite{bergrothSurveyLongestCommon2000}
+
+% How backtracking works
+To generate the path, \textit{Equation \ref{eq:lcs-dynamic-programming-gen}} will be used again but in the reverse direction, as the target is to find the previous array location according to the intermediate results and input sequences. The mathematical relationship used in the process is shown in \textit{Equation \ref{eq:lcs-dynamic-programming-back}} where $maxDp$ returns the $(i, j)$ pair that has the larger value in the dynamic programming array obtained in \textit{Algorithm \ref{algo:lcs-dynamic-programming-gen}}.
+
+\begin{equation}
+    \label{eq:lcs-dynamic-programming-back}
+    prev(i, j) = \left \{
+    \begin{aligned}
+        stop &, & i = 0 \vee j = 0 \\
+        (i-1, j-1) &, & X[i] = Y[j] \\
+        maxDp((i-1, j), (i, j-1)) &, & X[i] \neq Y[j]
+    \end{aligned}
+    \right.
+\end{equation}
+
+Starting from the $(M, N)$ location of the dynamic programming array indicating the end of both input sequences and backtracking following the rules in \textit{Equation \ref{eq:lcs-dynamic-programming-back}}, the LCS can be obtained in reversed order as the elements checked to satisfy $X[i]=Y[j]$ during the process until reaching the stopping condition. A stack data structure can be used to store the path and can provide the LCS in a positive order when popping the elements out. The essential steps of the backtracking process are listed in \textit{Algorithm \ref{algo:lcs-dynamic-programming-back}}.
+
+\begin{algorithm}
+    \caption{LCS Dynamic Programming Backtracking}
+    \label{algo:lcs-dynamic-programming-back}
+    \SetKwFunction{back}{backtrack}
+    \KwData{$X, Y \in sequence, dp =$ the DP array}
+    \KwResult{$path =$ the stack containing the LCS elements}
+    \SetKwProg{Fn}{Function}{:}{end}
+    \Fn{\back{$X$, $Y$, $dp$}}{
+        $result \gets$ empty stack \;
+        $i \gets M$ \; $j \gets N$ \;
+        \While{$i > 0 \wedge j > 0$}{
+            \uIf{$X[i] = Y[j]$}{
+                result.push($X[i]$) \;
+                $i--$ \; $j--$ \;
+            }
+            \uElseIf{$dp[i-1][j] > dp[i][j-1]$}{
+                $i--$ \;
+            }
+            \Else{
+                $j--$ \;
+            }
+        }
+        \KwRet $result$ \;
+    }
+\end{algorithm}
+
+Moving horizontally, vertically, and diagonally in the dynamic programming array, the backtracking process will have a maximum of $M + N$ iterations, with each doing a constant time operation. Therefore, the time complexity of the backtracking procedure is $O(M + N)$, and the time complexity of the entire process of finding the LCS is $O(MN) = O(MN) + O(M + N)$, which is significantly lower than the brute force and recursive solution introduced previously, proving a superior performance. \cite{hirschbergLinearSpaceAlgorithm1975} Combining the two processes, the complete dynamic programming solution of the LCS problem is shown in \textit{Algorithm \ref{algo:lcs-dynamic-programming}}.
+
+\begin{algorithm}
+    \caption{LCS Dynamic Programming Solution}
+    \label{algo:lcs-dynamic-programming}
+    \SetKwFunction{LCS}{LCS}
+    \SetKwFunction{max}{max}
+    \KwData{$X, Y \in sequence$}
+    \KwResult{$path =$ the stack containing the LCS elements}
+    \SetKwProg{Fn}{Function}{:}{end}
+    \Fn{\LCS{X, Y}}{
+        \tcc{Generate DP Array}
+        $dp \gets int[M+1][N+1]$ \;
+        \textit{Fill the row $i=0$ and column $j=0$ with $0$} \;
+        \For{$i \gets 1$ \KwTo $M$}{
+            \For{$j \gets 1$ \KwTo $N$}{
+                \eIf{$X[i-1] = Y[j-1]$}{
+                    $dp[i][j] = dp[i-1][j-1] + 1$ \;
+                }{
+                    $dp[i][j] = \max{dp[i-1][j], dp[i][j-1]}$ \;
+                }
+            }
+        }
+        \tcc{Backtracking}
+        $result \gets$ empty stack \;
+        $i \gets M$ \; $j \gets N$ \;
+        \While{$i > 0 \wedge j > 0$}{
+            \uIf{$X[i] = Y[j]$}{
+                result.push($X[i]$) \;
+                $i--$ \; $j--$ \;
+            }
+            \uElseIf{$dp[i-1][j] > dp[i][j-1]$}{
+                $i--$ \;
+            }
+            \Else{
+                $j--$ \;
+            }
+        }
+        \KwRet $result$ \;
+    }
+\end{algorithm}
+
+% Comparison among the three introduced solutions
+Among the three solutions to the LCS problem introduced in this section, the dynamic programming solution offers a balance between time and space with its $O(MN)$ time and space complexity. It is also commonly considered the only practical LCS algorithm among the three.
+
+%%%%%%%%%%%%%%%%%%%%%
+%%       SES       %%
+%%%%%%%%%%%%%%%%%%%%%
+
+\section{The Shortest Edit Script (SES) Problem}
+\label{section:ses}
+
+% Information left for reviewers
+\textit{Due to the time limit, the leftover part of the report is not finished yet.}
+
+\textbf{\textit{TO BE CONTINUED.}}
+
+\subsection{SES Problem Definition}
+
+\textbf{\textit{TO BE CONTINUED.}}
+
+\subsection{The Myers Algorithm}
+
+\textbf{\textit{TO BE CONTINUED.}}
+
+\subsection{The Linear Space Complexity Variant of The Myers Algorithm}
+
+\textbf{\textit{TO BE CONTINUED.}}
+
+%%%%%%%%%%%%%%%%%%%%%
+%%      Test       %%
+%%%%%%%%%%%%%%%%%%%%%
+
+\section{Performance Test}
+
+\textbf{\textit{TO BE CONTINUED.}}
+
+\section{Conclusion}
+
+\textbf{\textit{TO BE CONTINUED.}}
+
+%%%%%%%%%%%%%%%%%%%%%
+%%     Others      %%
+%%%%%%%%%%%%%%%%%%%%%
+
+%%
+%% The acknowledgments section is defined using the "acks" environment
+%% (and NOT an unnumbered section). This ensures the proper
+%% identification of the section in the article metadata, and the
+%% consistent spelling of the heading.
+\begin{acks}
+To Dr. Winoto, for teaching me throughout the semester and introducing me to the study and research of algorithms and their applications. To Dr. Chiu, for instructing me on Latex writing and pseudocode composition, which helped me a lot in writing the report. To the creators of online algorithm visualization tools, your work greatly assisted me in learning the concepts and provided me with easy ways to create figures for the report. Thanks to your help, I was able to complete the individual research and write this report.
+\end{acks}
+
+%%
+%% The next two lines define the bibliography style to be used, and
+%% the bibliography file.
+\bibliographystyle{ACM-Reference-Format}
+\bibliography{ref-base}
+
+%%
+%% If your work has an appendix, this is the place to put it.
+\appendix
+
+\section{Artificial Intelligence (AI) Usage}
+
+\subsection{OpenAI ChatGPT}
+
+The author has used OpenAI ChatGPT for literature review and Latex layout \& syntax consulting purposes, including summarizing paper contents, extracting research outcomes, seeking help on the \textit{algorithm2e} package, etc.
+
+\subsection{GitHub Copilot}
+
+The author has used GitHub Copilot for coding writing. The use of AI in code writing significantly reduced the time spent on repeating similar structures and can help analyze the error message for debugging.
+
+\section{Additional Resources}
+
+The \LaTeX\ source files and source code of the algorithms discussed and analyzed in the report can be accessed on GitHub. Link: \url{https://github.com/xht308/Diff_Algo_Demo}
+
+Written in Go language, the coding part of the project also provides a command-line utility for text file comparison. The executable binary for Windows x64 is currently provided. If needing the executable for other platforms, please follow the instructions in the GitHub repository to build the binary file.
+
+\end{document}
+\endinput
+%%
+%% End of file `sample-sigplan.tex'.
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%     Deprecated Snippets     %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% LCS Brute Force Algorithm Pseudocode
+% The old version using algorithmic
+% \begin{algorithm}
+%     \caption{LCS Brute Force Solution}
+%     \label{algo:lcs-brute-force}
+%     \renewcommand{\algorithmicrequire}{\textbf{Input:}}
+%     \renewcommand{\algorithmicensure}{\textbf{Output:}}
+%     \begin{algorithmic}[1]
+%         \REQUIRE $X, Y \in sequence \wedge len(X) \le len(Y)$
+%         \ENSURE $lcs = LCS(X, Y)$
+%         \STATE $i \gets 2 ^ {len(X)} - 1$
+%         \STATE $lcs \gets$ empty sequence
+%         \WHILE{$i > 0$}
+%             \STATE $sub \gets binaryMask(X, i)$
+%             \IF{$sub$ is a subsequence of $Y$ \AND $len(sub) > len(lcs)$}
+%             \STATE $lcs \gets sub$
+%             \ENDIF
+%         \ENDWHILE
+%     \end{algorithmic}
+% \end{algorithm}
