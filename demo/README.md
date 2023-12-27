@@ -11,7 +11,7 @@ A simple commandline diff2 tool written in Go.
 ## Algorithms
 A total of **three** diff algorithms were implemented and used in this project to compare the two files and propose the minimum edit operations needed.
 
-*For more details about the algorithms implemented, please check the **report** of the project in the same repo.*
+*For more details about the algorithms implemented, please check the [**report**](../report/) of the project in the same repo.*
 
 ### Basic Diff Algorithm
 Implementation: `basic_diff.go`
@@ -89,10 +89,10 @@ Chose which algorithm (`basic`, `myers`, `linearspace`) to use.
 Adding this flag will make the program finding shortest edit script between src and dest `strings`.
 
 #### -d: The destination file (string)
-**Necessary**. The path to the destination file or the destination string if the character mode enabled.
+**Required**. The path to the destination file or the destination string if the character mode enabled.
 
 #### -s: The source file (string)
-**Necessary**. The path to the source file or the source string if the character mode enabled.
+**Required**. The path to the source file or the source string if the character mode enabled.
 
 #### -t: Print the processing time
 With this flag enabled, the program will append the running time of the algorithm to the output in a new line.
